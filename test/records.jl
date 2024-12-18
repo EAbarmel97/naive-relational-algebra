@@ -12,7 +12,7 @@ function client(id::Int64, name::String, contactid::Int64)::Record{String, Any}
     return Record{String, Any}(Dict{String,Any}("id"  => id ,  "name" => name, "contactid"  => contactid))
 end
 
-employes = Set{Record{String,Any}}([employe(0, "Michael Scott", "Regional Manager", 100000),
+employees = Set{Record{String, Any}}([employe(0, "Michael Scott", "Regional Manager", 100000),
              employe(1, "Dwight K. Schrute", "Assistant to the Regional Manager", 65000),
              employe(2, "Pamela Besly", "Sales", 40000),
              employe(3, "James Halpert", "Sales", 55000),
