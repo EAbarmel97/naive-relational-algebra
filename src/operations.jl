@@ -32,7 +32,7 @@ Selects the given columns in the table.
 - `Set{Record{String,V}}`: Filtered set of records that satisfy all conditions.   
 """
 function project(table::Set{Record{String,V}}, columns::Vector{String})::Set{Record{String,V}} where V<:Any
-    table_out = Set{Record{String,V}}([Record{String,V}(Dict{String,V}(column => record[column] for column in columns)) for record in table])
+    table_out = Set{Record{String,V}}([Record{String,V}(OrderedDict{String,V}(column => record[column] for column in columns)) for record in table])
     return table_out
 end
 
@@ -51,16 +51,17 @@ Renames columns in a set of records based on the `columns` mapping.
 NOTE: Sets in Julia are immutable, so in order to effectively change the `table` you should write `table = rename(table, columns)`
 """
 function rename(table::Set{Record{String,V}}, columns::Dict{String,String})::Set{Record{String,V}} where V<:Any
-    table_columns = __columnsintable(table)
+    table_columns = __ordered_columns_intable(table)
+  
     table_out = Set{Record{String,V}}([
-        Record{String,V}(Dict{String,V}(get(columns, old_column_name, old_column_name) => record[old_column_name] for old_column_name in table_columns)) for record in table
+        Record{String,V}(OrderedDict{String,V}(get(columns, old_column_name, old_column_name) => record[old_column_name] for old_column_name in table_columns)) for record in table
     ])
 
     return table_out
 end
 
 function __prefixrecord(row::Record{String,V}, prefix::String)::Record{String,V} where V<:Any
-    return Record{String,V}(Dict{String,V}("$(prefix).$(key)" => value for (key, value) in row.dict))
+    return Record{String,V}(OrderedDict{String,V}("$(prefix).$(key)" => value for (key, value) in row.dict))
 end
 
 function __prefixcolumns(table::Set{Record{String,V}}, prefix::String)::Set{Record{String,V}} where V<:Any
@@ -68,7 +69,7 @@ function __prefixcolumns(table::Set{Record{String,V}}, prefix::String)::Set{Reco
 end
 
 """
-   crossproduct(left::Set{Record{String,V}}, right::Set{Record{String,V}})::Set{Record{String,V}} where V<:Any
+   cartesianproduct(left::Set{Record{String,V}}, right::Set{Record{String,V}})::Set{Record{String,V}} where V<:Any
 
 Compute the cross product of two sets of records, prefixing column names with table names.
 
@@ -80,7 +81,7 @@ Compute the cross product of two sets of records, prefixing column names with ta
 `Set{Record{String,V}}`: A set of records representing the cross product, 
 with column names prefixed by "left" and "right".
 """  
-function crossproduct(left::Set{Record{String,V}}, right::Set{Record{String,V}})::Set{Record{String,V}} where V<:Any
+function cartesianproduct(left::Set{Record{String,V}}, right::Set{Record{String,V}})::Set{Record{String,V}} where V<:Any
     # prefixing columns with table name
     left = __prefixcolumns(left, "left")
     right = __prefixcolumns(right, "right")

@@ -1,15 +1,17 @@
+using OrderedCollections
+
 include("../src/tables.jl")
 
 function employe(id::Int64, name::String, position::String, salary::Int64)::Record{String, Any}
-    return Record{String, Any}(Dict{String,Any}("id" => id, "name" => name, "position"  => position, "salary"  => salary))
+    return Record{String, Any}(OrderedDict{String,Any}("id" => id, "name" => name, "position"  => position, "salary"  => salary))
 end
 
 function task(id::Int64, employe_id::Int64, completed::Bool)::Record{String, Any}
-    return Record{String, Any}(Dict{String, Any}("id"  => id , "employe_id"  => employe_id, "completed"  => completed))
+    return Record{String, Any}(OrderedDict{String, Any}("id"  => id , "employe_id"  => employe_id, "completed"  => completed))
 end
 
 function client(id::Int64, name::String, contactid::Int64)::Record{String, Any}
-    return Record{String, Any}(Dict{String,Any}("id"  => id ,  "name" => name, "contactid"  => contactid))
+    return Record{String, Any}(OrderedDict{String,Any}("id"  => id,  "name" => name, "contactid"  => contactid))
 end
 
 employees = Set{Record{String, Any}}([employe(0, "Michael Scott", "Regional Manager", 100000),

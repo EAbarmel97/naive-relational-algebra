@@ -1,7 +1,7 @@
-using Printf
+using OrderedCollections
 
 struct Record{U<:Any, V<:Any} 
-    dict::Dict{U,V}
+    dict::OrderedDict{U,V}
 end
 
 function Base.hash(r::Record{U, V}) where {U<:Any, V<:Any}
@@ -24,3 +24,7 @@ end
 function __columnsintable(table::Set{Record{U,V}})::Set{U} where {U<:Any, V<:Any}
     return union!([keys(record) for record in table]...)
 end 
+
+function __ordered_columns_intable(table::Set{Record{U,V}})::OrderedSet{U} where {U<:Any, V<:Any}
+    return OrderedSet{U}(collect(keys(first(table).dict)))
+end
