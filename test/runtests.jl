@@ -37,37 +37,27 @@ end
      Record{String, Any}(OrderedDict{String, Any}("id" => 2, "full_name" => "Mr. Deckert", "contactid" => 1)),
      Record{String, Any}(OrderedDict{String, Any}("id" => 5, "full_name" => "Apex Technology", "contactid" => 1))
     ]))
+    
 
-     new_clients = Set{Record{String,Any}}([
+    new_clients = Set{Record{String,Any}}([
         Record{String, Any}(OrderedDict{String, Any}("id" => 3, "full_name" => "Phil Maguire", "contactid" => 3)),
         Record{String, Any}(OrderedDict{String, Any}("id" => 1, "full_name" => "Lackawanna County", "contactid" => 0)),
         Record{String, Any}(OrderedDict{String, Any}("id" => 4, "full_name" => "Harper Collins", "contactid" => 1)),
         Record{String, Any}(OrderedDict{String, Any}("id" => 2, "full_name" => "Mr. Deckert", "contactid" => 1))
-       ])
+    ])
 
-    new_clients = rename(new_clients, Dict{String, String}("full_name" => "client_full_name"))
+    new_clients = rename(new_clients, Dict{String, String}("full_name" => "client_full_name", "id" => "client_id"))
     
     #check rename is now persisted
    @test isequal(new_clients,  Set{Record{String,Any}}([
-        Record{String, Any}(OrderedDict{String, Any}("id" => 3, "client_full_name" => "Phil Maguire", "contactid" => 3)),
-        Record{String, Any}(OrderedDict{String, Any}("id" => 1, "client_full_name" => "Lackawanna County", "contactid" => 0)),
-        Record{String, Any}(OrderedDict{String, Any}("id" => 4, "client_full_name" => "Harper Collins", "contactid" => 1)),
-        Record{String, Any}(OrderedDict{String, Any}("id" => 2, "client_full_name" => "Mr. Deckert", "contactid" => 1))
+        Record{String, Any}(OrderedDict{String, Any}("client_id" => 3, "client_full_name" => "Phil Maguire", "contactid" => 3)),
+        Record{String, Any}(OrderedDict{String, Any}("client_id" => 1, "client_full_name" => "Lackawanna County", "contactid" => 0)),
+        Record{String, Any}(OrderedDict{String, Any}("client_id" => 4, "client_full_name" => "Harper Collins", "contactid" => 1)),
+        Record{String, Any}(OrderedDict{String, Any}("client_id" => 2, "client_full_name" => "Mr. Deckert", "contactid" => 1))
     ]))
 end
 
 @testset "crossproduct operator tests" begin 
-    marvel_movies = Set{Record{String,Any}}([
-    Record{String, Any}(OrderedDict{String, Any}("name" => "Spider man 3", "revenue" => 3000000, "rotten_tomatos_score" => 2.3)),
-    Record{String, Any}(OrderedDict{String, Any}("name" => "Iron man 1", "revenue" => 45000000, "rotten_tomatos_score" => 5.0 )),
-    Record{String, Any}(OrderedDict{String, Any}("name" => "The Hulk 1", "revenue" => 23000000, "rotten_tomatos_score" => 4.4 ))
-   ])
-    
-    netflix_series = Set{Record{String,Any}}([
-    Record{String, Any}(OrderedDict{String, Any}("name" => "Rick & Morty", "number_of_seasons" => 6 , "is_available" => true)),
-    Record{String, Any}(OrderedDict{String, Any}("name" => "The Office", "number_of_seasons" => 8, "is_available" => true )),
-    Record{String, Any}(OrderedDict{String, Any}("name" => "The super ultra ultra Justice League", "number_of_seasons" => 0, "is_available" => false ))
-   ])
 
    output_relation = cartesianproduct(marvel_movies, netflix_series)
 
@@ -88,4 +78,12 @@ end
     Record{String, Any}(OrderedDict{String, Any}("left.name" => "The Hulk 1", "left.revenue" => 23000000, "left.rotten_tomatos_score" => 4.4, "right.name" => "The Office", "right.number_of_seasons" => 8, "right.is_available" => true)),
     Record{String, Any}(OrderedDict{String, Any}("left.name" => "The Hulk 1", "left.revenue" => 23000000, "left.rotten_tomatos_score" => 4.4, "right.name" => "The super ultra ultra Justice League", "right.number_of_seasons" => 0, "right.is_available" => false))
     ]))
+end
+
+@testset "diference operator tests" begin
+   
+end
+
+@testset "union operator tests" begin 
+    
 end

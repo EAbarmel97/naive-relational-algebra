@@ -78,7 +78,7 @@ Compute the cross product of two sets of records, prefixing column names with ta
 - `right::Set{Record{String,V}}`: The second set of records.
 
 # Returns
-`Set{Record{String,V}}`: A set of records representing the cross product, 
+`Set{Record{String,V}}`: A set of records representing the cartesian product, 
 with column names prefixed by "left" and "right".
 """  
 function cartesianproduct(left::Set{Record{String,V}}, right::Set{Record{String,V}})::Set{Record{String,V}} where V<:Any
@@ -87,5 +87,56 @@ function cartesianproduct(left::Set{Record{String,V}}, right::Set{Record{String,
     right = __prefixcolumns(right, "right")
 
     table_out = Set{Record{String,V}}([Record{String,V}(merge(row_l.dict,row_r.dict)) for (row_l, row_r) in Base.Iterators.product(left, right)])
+    return table_out
+end
+
+function diference(left::Set{Record{String,V}}, right::Set{Record{String,V}})::Set{Record{String,V}} where V<:Any
+   return setdiff(left, right)
+end
+
+"""
+    intersection(left::Set{Record{String,V}}, right::Set{Record{String,V}})::Set{Record{String,V}} where V<:Any
+
+Returns the intersection of the tables.
+
+# Args:
+- `left::Set{Record{String,V}}`: The first set of records.
+- `right::Set{Record{String,V}}`: The second set of records
+
+# Returns:
+`Set{Record{String,V}}`: intersection of the input tables
+
+Note: this does not add more expressive power to our already existing operations. Intersection can be written as 
+the repeated application of the difference operator.
+"""
+function intersection(left::Set{Record{String,V}}, right::Set{Record{String,V}})::Set{Record{String,V}} where V<:Any
+    table_out = difference(left, difference(left, right))
+    return table_out
+end
+
+"""
+   union!(left::Set{Record{String,V}}, right::Set{Record{String,V}})::Set{Record{String,V}} where V<:Any
+
+Returns the union of the tables.
+
+# Arguments
+- `left::Set{Record{String,V}}`: The first set of records.
+- `right::Set{Record{String,V}}`: The second set of records.
+
+# Returns
+`Set{Record{String,V}}`: A set of records representing the union, of the "left" and "right" tables.
+
+Note: this is not the usual set-theoretic union, since duplicates are allowed.
+"""
+function union!(left::Set{Record{String,V}}, right::Set{Record{String,V}})::Set{Record{String,V}} where V<:Any
+    # padding
+    left_cols = __columnsintable(left)
+    right_cols = __columnsintable(right)
+
+    left = __padtable(left, setdiff(right_cols, left_cols))
+    right = __padtable(right, setdiff(left_cols, right_cols))
+
+    table_out = union(left, right)
+
     return table_out
 end

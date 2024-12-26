@@ -39,3 +39,15 @@ clients = Set{Record{String, Any}}([client(0, "Dunmore High School", 3),
            client(3, "Phil Maguire", 3),
            client(4, "Harper Collins", 1),
            client(5, "Apex Technology", 1)])
+           
+marvel_movies = Set{Record{String,Any}}([
+            Record{String, Any}(OrderedDict{String, Any}("name" => "Spider man 3", "revenue" => 3000000, "rotten_tomatos_score" => 2.3)),
+            Record{String, Any}(OrderedDict{String, Any}("name" => "Iron man 1", "revenue" => 45000000, "rotten_tomatos_score" => 5.0 )),
+            Record{String, Any}(OrderedDict{String, Any}("name" => "The Hulk 1", "revenue" => 23000000, "rotten_tomatos_score" => 4.4 ))
+           ])          
+            
+netflix_series = Set{Record{String,Any}}([
+            Record{String, Any}(OrderedDict{String, Any}("name" => "Rick & Morty", "number_of_seasons" => 6 , "is_available" => true)),
+            Record{String, Any}(OrderedDict{String, Any}("name" => "The Office", "number_of_seasons" => 8, "is_available" => true )),
+            Record{String, Any}(OrderedDict{String, Any}("name" => "The super ultra ultra Justice League", "number_of_seasons" => 0, "is_available" => false ))
+           ])
