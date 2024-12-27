@@ -186,8 +186,9 @@ Natural join of the left and right tables. It is the same as a theta join with t
 `Set{Record{String,V}}`: natural join of left and right.
 """
 function naturaljoin(left::Set{Record{String,V}}, right::Set{Record{String,V}})::Set{Record{String,V}} where V<:Any
-    common_cols = intersection(__ordered_columns_intable(left), __ordered_columns_intable(right))
-    conditions = Function[(x,y) -> x[col] == y[col] for col in common_cols]
+    common_cols = intersect(__ordered_columns_intable(left), __ordered_columns_intable(right))
+    conditions = Function[(x,y) -> x["left.$col"] == y["right.$col"] for col in common_cols]
+    
     joined_table = thetajoin(left, right, conditions)
 
     return joined_table

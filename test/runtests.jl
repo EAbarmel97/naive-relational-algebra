@@ -122,3 +122,25 @@ end
 
    @test isequal(length(output_table),10)
 end
+
+@testset "natural join operator tests" begin
+    output_table = naturaljoin(companies,foods)
+    #check natural join contains correct attributes
+    @test isequal(__ordered_columns_intable(output_table), 
+                OrderedSet{String}(String["left.COMPANY_ID", "left.COMPANY_NAME", "left.COMPANY_CITY", "right.ITEM_ID", "right.ITEM_NAME", "right.ITEM_UNIT", "right.COMPANY_ID"]))
+    
+    @test isequal(output_table, Set{Record{String, Any}}([Record{String, Any}(OrderedDict{String, Any}("left.COMPANY_ID" => 16,"left.COMPANY_NAME" => "Akas Foods",  "left.COMPANY_CITY" => "Delhi" , 
+    "right.ITEM_ID" => 1 , "right.ITEM_NAME" =>  "Chex Mix", "right.ITEM_UNIT" => "Pcs" , "right.COMPANY_ID" => 16)),
+    Record{String, Any}(OrderedDict{String, Any}("left.COMPANY_ID" => 15,"left.COMPANY_NAME" => "Jack Hill Ltd", "left.COMPANY_CITY" => "London",
+                                                 "right.ITEM_ID" => 6, "right.ITEM_NAME" => "Cheez-It", "right.ITEM_UNIT" => "Pcs", "right.COMPANY_ID" => 15)),
+    Record{String, Any}(OrderedDict{String, Any}("left.COMPANY_ID" => 15,"left.COMPANY_NAME" => "Jack Hill Ltd", "left.COMPANY_CITY" => "London",
+                                                  "right.ITEM_ID" => 2, "right.ITEM_NAME" => "BN Biscuit", "right.ITEM_UNIT" => "Pcs", "right.COMPANY_ID" => 15)),
+    Record{String, Any}(OrderedDict{String, Any}("left.COMPANY_ID" => 17,"left.COMPANY_NAME" => "Foodies.", "left.COMPANY_CITY" => "London",
+                                                  "right.ITEM_ID" => 3, "right.ITEM_NAME" => "Mighty Munch", "right.ITEM_UNIT" => "Pcs", "right.COMPANY_ID" => 17)),
+    Record{String, Any}(OrderedDict{String, Any}("left.COMPANY_ID" => 15,"left.COMPANY_NAME" => "Jack Hill Ltd", "left.COMPANY_CITY" => "London",
+                                                  "right.ITEM_ID" => 4, "right.ITEM_NAME" => "Pot Rice", "right.ITEM_UNIT" => "Pcs", "right.COMPANY_ID" => 15)),
+    Record{String, Any}(OrderedDict{String, Any}("left.COMPANY_ID" => 18,"left.COMPANY_NAME" => "Order All", "left.COMPANY_CITY" => "Boston",
+                                                  "right.ITEM_ID" => 5, "right.ITEM_NAME" => "Jaffa Cakes", "right.ITEM_UNIT" => "Pcs", "right.COMPANY_ID" => 18))
+]))
+end
+
