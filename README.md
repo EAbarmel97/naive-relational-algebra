@@ -1,4 +1,4 @@
-ni# About this repo:
+# About this repo:
 
 After reading [this Medium article](https://medium.com/swlh/how-to-build-a-relational-database-from-scratch-e208061027c7) titled `How to Build a Relational Database From Scratch,
 Opening the black box of relational databases` by Trivadar Danka, I decided

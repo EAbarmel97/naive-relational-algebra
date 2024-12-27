@@ -1,4 +1,5 @@
 using Base.Iterators
+import Base.union!
 
 include("tables.jl")
 
@@ -90,7 +91,14 @@ function cartesianproduct(left::Set{Record{String,V}}, right::Set{Record{String,
     return table_out
 end
 
-function diference(left::Set{Record{String,V}}, right::Set{Record{String,V}})::Set{Record{String,V}} where V<:Any
+function difference(left::Set{Record{String,V}}, right::Set{Record{String,V}})::Set{Record{String,V}} where V<:Any
+    # check equal domains 
+    left_cols =  __columnsintable(left)
+    right_cols = __columnsintable(right)
+    if !isequal(left_cols, right_cols)
+       throw(ErrorException("table domain missmatch exception"))
+    end
+
    return setdiff(left, right)
 end
 
@@ -117,26 +125,70 @@ end
 """
    union!(left::Set{Record{String,V}}, right::Set{Record{String,V}})::Set{Record{String,V}} where V<:Any
 
-Returns the union of the tables.
+Returns the set union of two tables that have the same domain and arity
 
 # Arguments
 - `left::Set{Record{String,V}}`: The first set of records.
 - `right::Set{Record{String,V}}`: The second set of records.
 
 # Returns
-`Set{Record{String,V}}`: A set of records representing the union, of the "left" and "right" tables.
-
-Note: this is not the usual set-theoretic union, since duplicates are allowed.
+`Set{Record{String,V}}`: A set of records representing the union of the "left" and "right" tables.
 """
 function union!(left::Set{Record{String,V}}, right::Set{Record{String,V}})::Set{Record{String,V}} where V<:Any
-    # padding
-    left_cols = __columnsintable(left)
-    right_cols = __columnsintable(right)
+    # check equal domains 
+    left_cols =  __ordered_columns_intable(left)
+    right_cols = __ordered_columns_intable(right)
+    if !isequal(left_cols, right_cols)
+       throw(ErrorException("table domain missmatch exception"))
+    end
+    
+    return Set{Record{String,V}}(Base.union(collect(left), collect(right)))
+end
 
-    left = __padtable(left, setdiff(right_cols, left_cols))
-    right = __padtable(right, setdiff(left_cols, right_cols))
+"""
+   thetajoin(left::Set{Record{String,V}}, right::Set{Record{String,V}}, conditions::Vector{Function})::Set{Record{String,V}} where V<:Any
 
-    table_out = union(left, right)
+Joins the table according to conditions.
 
-    return table_out
+# Args:
+- `left::Set{Record{String,V}}`: The first set of records.
+- `right::Set{Record{String,V}}`: The second set of records.
+- `conditions::Vector{Function}`, list of conditions to join on. Each condition
+            should be a function mapping a tuple of a row from left and right to a Bool.
+            Example: [(x, y) ->  x['id'] == y['employee_id']
+
+# Returns:
+`Set{Record{String,V}}`: join of the "left" and "right" tables sattisfying the given "conditions"
+"""
+function thetajoin(left::Set{Record{String,V}}, right::Set{Record{String,V}}, conditions::Vector{Function})::Set{Record{String,V}} where V<:Any
+    left = __prefixcolumns(left, "left")
+    right = __prefixcolumns(right, "right")
+
+    # determining the pair of rows which satisfy the conditions
+    joined_table = Set{Record{String,V}}([
+        Record{String,V}(merge(row_l.dict,row_r.dict)) for (row_l, row_r) in Base.Iterators.product(left, right) 
+        if all([cond(row_l, row_r) for cond in conditions])
+    ])
+        
+    return joined_table
+end
+
+"""
+   naturaljoin(left::Set{Record{String,V}}, right::Set{Record{String,V}})::Set{Record{String,V}} where V<:Any  
+
+Natural join of the left and right tables. It is the same as a theta join with the condition that matching columns should be equal.
+
+# Args:
+- `left::Set{Record{String,V}}`: The first set of records.
+- `right::Set{Record{String,V}}`: The second set of records.
+
+# Returns:
+`Set{Record{String,V}}`: natural join of left and right.
+"""
+function naturaljoin(left::Set{Record{String,V}}, right::Set{Record{String,V}})::Set{Record{String,V}} where V<:Any
+    common_cols = intersection(__ordered_columns_intable(left), __ordered_columns_intable(right))
+    conditions = Function[(x,y) -> x[col] == y[col] for col in common_cols]
+    joined_table = thetajoin(left, right, conditions)
+
+    return joined_table
 end

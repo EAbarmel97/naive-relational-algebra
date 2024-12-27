@@ -80,10 +80,45 @@ end
     ]))
 end
 
-@testset "diference operator tests" begin
-   
+@testset "union operator tests" begin 
+   series_and_movies = union!(project(netflix_series,String["name"]), project(marvel_movies,String["name"]))
+
+   #check the union ha ste correct cardinality
+   @test isequal(length(series_and_movies), 6)
+
+   @test isequal(series_and_movies, Set{Record{String,Any}}([
+    Record{String, Any}(OrderedDict{String, Any}("name" => "Spider man 3")),
+    Record{String, Any}(OrderedDict{String, Any}("name" => "Iron man 1")),
+    Record{String, Any}(OrderedDict{String, Any}("name" => "The Hulk 1")),
+    Record{String, Any}(OrderedDict{String, Any}("name" => "Rick & Morty")),
+    Record{String, Any}(OrderedDict{String, Any}("name" => "The Office")),
+    Record{String, Any}(OrderedDict{String, Any}("name" => "The super ultra ultra Justice League"))
+   ]))
 end
 
-@testset "union operator tests" begin 
-    
+@testset "theta join operator tests" begin
+   output_table = thetajoin(clients, tasks, Function[(x,y) -> x["left.id"] == y["right.employe_id"]])
+
+   @test isequal(output_table,Set(Record{String, Any}[Record{String, Any}(OrderedDict{String, Any}("left.id" => 3, "left.name" => "Phil Maguire", 
+                                                                    "left.contactid" => 3, "right.id" => 7, "right.employe_id" => 3, "right.completed" => false)), 
+                                                      Record{String, Any}(OrderedDict{String, Any}("left.id" => 1, "left.name" => "Lackawanna County", "left.contactid" => 0, 
+                                                                    "right.id" => 2, "right.employe_id" => 1, "right.completed" => true)), 
+                                                      Record{String, Any}(OrderedDict{String, Any}("left.id" => 1, "left.name" => "Lackawanna County", 
+                                                                    "left.contactid" => 0, "right.id" => 4, "right.employe_id" => 1, "right.completed" => true)), 
+                                                      Record{String, Any}(OrderedDict{String, Any}("left.id" => 3, "left.name" => "Phil Maguire", "left.contactid" => 3, 
+                                                                    "right.id" => 9, "right.employe_id" => 3, "right.completed" => false)), 
+                                                      Record{String, Any}(OrderedDict{String, Any}("left.id" => 0, "left.name" => "Dunmore High School", "left.contactid" => 3, 
+                                                                    "right.id" => 1, "right.employe_id" => 0, "right.completed" => false)), 
+                                                      Record{String, Any}(OrderedDict{String, Any}("left.id" => 3, "left.name" => "Phil Maguire", "left.contactid" => 3, 
+                                                                    "right.id" => 8, "right.employe_id" => 3, "right.completed" => true)), 
+                                                      Record{String, Any}(OrderedDict{String, Any}("left.id" => 0, "left.name" => "Dunmore High School", "left.contactid" => 3, 
+                                                                    "right.id" => 0, "right.employe_id" => 0, "right.completed" => false)), 
+                                                      Record{String, Any}(OrderedDict{String, Any}("left.id" => 2, "left.name" => "Mr. Deckert", "left.contactid" => 1, 
+                                                                    "right.id" => 5, "right.employe_id" => 2, "right.completed" => true)), 
+                                                      Record{String, Any}(OrderedDict{String, Any}("left.id" => 3, "left.name" => "Phil Maguire", "left.contactid" => 3, 
+                                                                    "right.id" => 6, "right.employe_id" => 3, "right.completed" => false)), 
+                                                      Record{String, Any}(OrderedDict{String, Any}("left.id" => 1, "left.name" => "Lackawanna County", "left.contactid" => 0, 
+                                                                    "right.id" => 3, "right.employe_id" => 1, "right.completed" => true))]))
+
+   @test isequal(length(output_table),10)
 end
